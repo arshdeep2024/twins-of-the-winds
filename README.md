@@ -8,7 +8,12 @@ This project involves building a predictive model using a Random Forest Regresso
 1. **Loading Data**: The dataset `train.csv` was loaded using pandas.
 2. **Handling Missing Values**: Missing values in `humidity`, `zon.winds`, `mer.winds`, and `air temp.` were filled with the mean of their respective columns.
 3. **Feature Selection**: The target variable was `s.s.temp.`, and features included `humidity`, `zon.winds`, `mer.winds`, and `air temp.`. The feature set without humidity was also prepared but not used in the final model.
-4. **Splitting Data**: The dataset was split into training and testing sets with an 80-20 split using `train_test_split`.
+4. **Splitting Data**: The dataset was split into training and testing sets with a test size of 9% using `train_test_split`.
+
+#### Feature Selection
+**Target and Features**:
+1. The target variable (y1) was s.s.temp.
+2. The features (X1) included all columns except s.s.temp.
 
 #### Model Training and Hyperparameter Tuning
 1. **Model Selection**: A `RandomForestRegressor` was chosen for its robustness and ability to handle missing values.
@@ -38,7 +43,7 @@ X1["mer.winds"].fillna(value=np.mean(X1["mer.winds"]), inplace=True)
 X1["air temp."].fillna(value=np.mean(X1["air temp."]), inplace=True)
 
 # Split data
-X_train, X_test, y_train, y_test = train_test_split(X1, y1, test_size=0.2)
+X_train, X_test, y_train, y_test = train_test_split(X1, y1, test_size=0.09)
 
 # Define model
 clf = RandomForestRegressor(n_jobs=-1)
@@ -53,7 +58,7 @@ grid = {
 
 # Perform grid search
 scorer = make_scorer(mean_squared_error, greater_is_better=False)
-gs_clf = GridSearchCV(estimator=clf, param_grid=grid, cv=5, scoring=scorer, n_jobs=-1, verbose=2)
+gs_clf = GridSearchCV(estimator=clf, param_grid=grid, cv=7, scoring=scorer, n_jobs=-1, verbose=2)
 gs_clf.fit(X_train, y_train)
 ```
 
@@ -67,13 +72,7 @@ print(f'Mean Squared Error: {mse}')
 ```
 
 #### Predictions
-The trained model was used to make predictions on a separate dataset (`data_1997_1998.csv`).
-
-```python
-testing_labels = pd.read_csv("data_1997_1998.csv")
-testing_labels = testing_labels.drop(['Index'], axis=1)
-predictions = gs_clf.predict(testing_labels)
-```
+The trained model was used to make predictions on separate datasets (`data_1997_1998.csv`) and (`evaluation.csv`).
 
 ### Conclusion
 The project successfully built and tuned a Random Forest Regressor to predict sea surface temperature. The use of grid search allowed for optimal hyperparameter tuning, resulting in a model with a reasonable performance as evaluated by mean squared error.
